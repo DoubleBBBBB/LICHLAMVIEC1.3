@@ -1,0 +1,10 @@
+{
+  "name": "Lịch Làm Việc Của PI",
+  "short_name": "Lịch Ca PI",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7fc",
+  "theme_color": "#101c34",
+  "lang": "vi",
+  "icons": []
+}

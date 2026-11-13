@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101c34">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Lịch Làm Việc Của PI</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#17243b;background:#f4f7fc}
+*{box-sizing:border-box}
+body{margin:0}
+main{max-width:580px;margin:auto;padding:20px 16px 90px}
+.hero{background:linear-gradient(130deg,#172f59,#355f9b);color:white;padding:24px;border-radius:24px;box-shadow:0 14px 35px #18396525}
+.eyebrow{font-size:13px;opacity:.75}
+h1{font-size:25px;margin:7px 0 12px}
+.hero strong{font-size:21px}
+.hero p{margin:10px 0 0;opacity:.85;line-height:1.5}
+.card{background:white;border-radius:22px;padding:18px;margin-top:16px;box-shadow:0 5px 24px #162b4810}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.toolbar h2{font-size:19px;margin:0}
+button{border:0;border-radius:12px;padding:11px 14px;background:#edf2fa;color:#234268;font-size:15px;font-weight:650;cursor:pointer}
+button.primary{background:#285da6;color:white}
+button.danger{background:#fde8e8;color:#a32020}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #77b5ff}
+.week,.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.week{margin-top:19px;color:#738098;font-size:12px;text-align:center}
+.days{margin-top:8px}
+.day{min-height:68px;padding:6px 2px;border-radius:12px;background:#f6f8fc;text-align:center;border:2px solid transparent;font-size:14px;cursor:pointer;position:relative}
+.day.empty{background:transparent;cursor:default}
+.day.selected{border-color:#3464a8}
+.day.today .num{text-decoration:underline;font-weight:800}
+.day.shift-day{background:#dcecff}
+.day.shift-night{background:#e8defe}
+.day.shift-off{background:#e8f4e9}
+.day.shift-office{background:#fff4d9}
+.num{font-weight:700}
+.tags{display:flex;flex-direction:column;gap:3px;margin-top:5px}
+.tag{font-size:10px;line-height:1.35;border-radius:5px;padding:2px 0}
+.day-shift{background:#dcecff;color:#174d92}
+.night-shift{background:#e8defe;color:#5e3c97}
+.off-shift{background:#e8f4e9;color:#36764a}
+.office-shift{background:#fff4d9;color:#8a5a00}
+.att-mark{background:#fff3cd;color:#8a6d00;font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px;font-size:12px;color:#516079}
+.legend span{display:flex;align-items:center;gap:5px}
+.dot{width:10px;height:10px;border-radius:3px}
+.detail{line-height:1.7;color:#42536c}
+.detail h3{margin:0 0 8px;color:#192c48}
+.detail p{margin:5px 0}
+label{display:block;font-size:13px;color:#52617a;margin-bottom:7px;font-weight:600}
+input,select{width:100%;padding:13px;border:1px solid #cdd7e6;border-radius:12px;background:white;color:#17243b;font-size:16px}
+form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+form .full{grid-column:1/-1}
+.muted{color:#728198;font-size:13px;line-height:1.5}
+.toast{margin-top:10px;color:#286e49;font-size:13px;min-height:18px}
+.footer{text-align:center;color:#7d899c;font-size:12px;margin-top:24px}
+.att-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.att-grid button{padding:10px 6px;font-size:13px}
+.att-status{margin-top:10px;padding:10px 12px;border-radius:12px;background:#f0f6ff;font-size:14px;color:#1d3a63}
+.att-status b{color:#0d2a52}
+.pay-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.pay-box{background:#f0f6ff;border-radius:14px;padding:12px;text-align:center}
+.pay-box .val{font-size:22px;font-weight:800;color:#1d3a63;line-height:1.2}
+.pay-box .lbl{font-size:12px;color:#52617a;margin-top:3px}
+.pay-list{margin-top:12px;font-size:13px;color:#42536c;line-height:1.6;max-height:260px;overflow:auto}
+.pay-list div{padding:6px 0;border-bottom:1px dashed #e2e9f3}
+.pay-list div:last-child{border-bottom:0}
+.pay-list .hrs{float:right;font-weight:700;color:#1d3a63}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:14px;background:#fff8e8;border:1px solid #f2dfae;margin-bottom:12px}
+.toggle-row .toggle-info{flex:1;min-width:0}
+.toggle-row .toggle-title{font-size:14px;font-weight:700;color:#8a5a00}
+.toggle-row .toggle-sub{font-size:12px;color:#a07b2e;margin-top:2px}
+.switch{position:relative;display:inline-block;width:50px;height:28px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;inset:0;background:#d6dbe4;border-radius:28px;transition:.25s}
+.slider:before{content:"";position:absolute;height:22px;width:22px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch input:checked + .slider{background:#e0a92e}
+.switch input:checked + .slider:before{transform:translateX(22px)}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(15,30,60,.55);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:22px;padding:22px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:pop .25s ease;max-height:90vh;overflow-y:auto}
+@keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.modal-title{font-size:17px;font-weight:750;color:#192c48;margin-bottom:6px;text-align:center}
+.modal-sub{font-size:13px;color:#728198;text-align:center;margin-bottom:16px}
+
+.action-options{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.action-option{padding:18px;border-radius:16px;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;gap:14px;font-size:16px;font-weight:700;font-family:inherit;background:#f6f8fc;color:#17243b;transition:.18s;text-align:left}
+.action-option:hover{transform:translateX(3px)}
+.action-option .icon{font-size:26px}
+.action-option .action-text{display:flex;flex-direction:column;gap:2px}
+.action-option .action-sub{font-size:12px;color:#728198;font-weight:500}
+.action-option.att-action{background:#eaf3ff;border-color:#bcd8ff}
+.action-option.att-action:hover{border-color:#285da6;background:#dcecff}
+.action-option.shift-action{background:#fff8e8;border-color:#f2dfae}
+.action-option.shift-action:hover{border-color:#c99a2e;background:#fff4d9}
+
+.shift-options{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.shift-option{padding:14px 18px;border-radius:14px;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:15px;font-weight:650;font-family:inherit;background:#f6f8fc;color:#17243b;transition:.18s;text-align:left}
+.shift-option:hover{transform:translateX(3px);background:#eef4ff}
+.shift-option .icon{font-size:20px}
+.shift-option .detail{font-size:12px;color:#728198;font-weight:500;margin-left:auto}
+.shift-option.day{border-color:#bcd8ff}
+.shift-option.day:hover{border-color:#285da6;background:#eaf3ff}
+.shift-option.night{border-color:#d6c8f7}
+.shift-option.night:hover{border-color:#7c4dcc;background:#f3edff}
+.shift-option.off{border-color:#c8e8d2}
+.shift-option.off:hover{border-color:#36764a;background:#effaf2}
+.shift-option.office{border-color:#f2dfae}
+.shift-option.office:hover{border-color:#c99a2e;background:#fff8e8}
+.shift-option.note{border-color:#f7e2a8}
+.shift-option.note:hover{border-color:#c99a2e;background:#fff9e6}
+
+.note-box{display:none;margin-bottom:16px;padding:14px;border-radius:14px;background:#fffbeb;border:1px solid #f7e2a8}
+.note-box.show{display:block}
+.note-box label{color:#8a6d00;font-weight:650}
+.note-box textarea{width:100%;padding:12px;border:1px solid #e6d9a8;border-radius:12px;font:inherit;resize:vertical;background:#fff;color:#17243b;font-size:15px;min-height:90px}
+.note-box .note-actions{display:flex;gap:8px;margin-top:10px}
+.note-box .note-actions button{flex:1;padding:10px;font-size:14px;border-radius:10px}
+.note-save{background:#c99a2e;color:#fff}
+.note-del{background:#fde8e8;color:#a32020}
+
+.modal-actions{display:flex;gap:10px;margin-top:8px}
+.modal-actions button{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:650;cursor:pointer;border:0;font-family:inherit}
+.modal-cancel{background:#edf2fa;color:#52617a}
+.modal-clear{background:#fde8e8;color:#a32020}
+.modal-back{background:#edf2fa;color:#52617a}
+
+@media(max-width:370px){
+  main{padding:12px 9px 70px}
+  .card{padding:12px}
+  .day{min-height:62px}
+  .tag{font-size:9px}
+  .modal-box{padding:16px}
+}
+</style>
+</head>
+<body>
+<main>
+<section class="hero">
+  <div class="eyebrow">LỊCH CA LÀM VIỆC CÁ NHÂN</div>
+  <h1>Lịch Ca Của PI</h1>
+  <strong id="status">Đang tính lịch...</strong>
+  <p id="countdown"></p>
+</section>
+
+<section class="card">
+  <div class="toolbar">
+    <button id="prev" aria-label="Tháng trước">‹</button>
+    <h2 id="month"></h2>
+    <button id="next" aria-label="Tháng sau">›</button>
+    <button id="today">Hôm nay</button>
+  </div>
+  <div class="week"><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span></div>
+  <div id="days" class="days"></div>
+  <div class="legend">
+    <span><i class="dot office-shift"></i>Hành chính</span>
+    <span><i class="dot day-shift"></i>Ca ngày</span>
+    <span><i class="dot night-shift"></i>Ca đêm</span>
+    <span><i class="dot off-shift"></i>Nghỉ</span>
+    <span><i class="dot att-mark"></i>Đã chấm</span>
+  </div>
+</section>
+
+<section class="card detail" id="detail" aria-live="polite"></section>
+
+<section class="card">
+  <div class="toolbar">
+    <button id="payPrev" aria-label="Kỳ trước">‹</button>
+    <h2 id="payTitle" style="font-size:18px">Bảng công</h2>
+    <button id="payNext" aria-label="Kỳ sau">›</button>
+  </div>
+  <div class="pay-summary">
+    <div class="pay-box"><div class="val" id="payHours">0</div><div class="lbl">Tổng giờ</div></div>
+    <div class="pay-box"><div class="val" id="payCong">0</div><div class="lbl">Số công</div></div>
+  </div>
+  <div class="pay-list" id="payList"></div>
+</section>
+
+<section class="card">
+  <h2 style="font-size:19px;margin:0 0 15px">⚙️ Cài đặt</h2>
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <div class="toggle-title">🏢 Ca hành chính</div>
+      <div class="toggle-sub">T2 → T7: 08:30 – 16:30 · CN nghỉ</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="officeToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+  <form id="settings">
+    <div><label for="startDate">Ngày bắt đầu chu kỳ</label><input id="startDate" type="date" required></div>
+    <div><label for="startTime">Giờ bắt đầu chu kỳ</label><input id="startTime" type="time" required></div>
+    <div class="full">
+      <label for="restHours">Thời gian nghỉ sau mỗi ca 12 tiếng</label>
+      <select id="restHours">
+        <option value="8">Nghỉ 8 tiếng (chu kỳ 12/8)</option>
+        <option value="12">Nghỉ 12 tiếng (chu kỳ 12/12)</option>
+        <option value="16">Nghỉ 16 tiếng (chu kỳ 12/16)</option>
+        <option value="24">Nghỉ 24 tiếng (chu kỳ 12/24)</option>
+        <option value="36">Nghỉ 36 tiếng (chu kỳ 12/36)</option>
+        <option value="48">Nghỉ 48 tiếng (chu kỳ 12/48)</option>
+      </select>
+    </div>
+    <div class="full"><button class="primary" type="submit" style="width:100%">Lưu & tính lại lịch</button></div>
+  </form>
+  <div id="saved" class="toast" role="status"></div>
+</section>
+
+<p class="footer">BY DOUBLEB VERSION 1.3</p>
+</main>
+
+<!-- MODAL 1: CHỌN HÀNH ĐỘNG -->
+<div class="modal-overlay" id="actionModal">
+  <div class="modal-box">
+    <div class="modal-title" id="actionTitle">Chọn hành động</div>
+    <div class="modal-sub" id="actionSub"></div>
+    <div class="action-options">
+      <button class="action-option att-action" id="btnGoAttendance">
+        <span class="icon">⏱️</span>
+        <span class="action-text">
+          <span>Chấm công</span>
+          <span class="action-sub">Ghi nhận ca đã làm</span>
+        </span>
+      </button>
+      <button class="action-option shift-action" id="btnGoShift">
+        <span class="icon">🔄</span>
+        <span class="action-text">
+          <span>Đổi ca</span>
+          <span class="action-sub">Chọn ca / ghi chú</span>
+        </span>
+      </button>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="btnCancelAction">Hủy</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2: CHỌN CA -->
+<div class="modal-overlay" id="shiftModal">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">Chọn ca</div>
+    <div class="shift-options">
+      <button class="shift-option day" data-shift="day">
+        <span class="icon">🌞</span><span>Ca ngày</span><span class="detail">12 tiếng</span>
+      </button>
+      <button class="shift-option night" data-shift="night">
+        <span class="icon">🌙</span><span>Ca đêm</span><span class="detail">12 tiếng</span>
+      </button>
+      <button class="shift-option office" data-shift="office">
+        <span class="icon">🏢</span><span>Hành chính</span><span class="detail">8h30 – 16h30</span>
+      </button>
+      <button class="shift-option off" data-shift="off">
+        <span class="icon">🏖️</span><span>Nghỉ</span><span class="detail">Không làm</span>
+      </button>
+      <button class="shift-option note" id="btnOpenNote">
+        <span class="icon">📝</span><span>Ghi chú</span><span class="detail">Thêm ghi chú</span>
+      </button>
+    </div>
+
+    <div class="note-box" id="noteBox">
+      <label for="modalNoteInput">📝 Ghi chú cho ngày này</label>
+      <textarea id="modalNoteInput" maxlength="2000" placeholder="Nhập ghi chú..."></textarea>
+      <div class="note-actions">
+        <button class="note-save" id="btnSaveNote">💾 Lưu ghi chú</button>
+        <button class="note-del" id="btnDeleteNote">🗑️ Xóa ghi chú</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-back" id="btnBackToAction">← Quay lại</button>
+      <button class="modal-clear" id="btnClearShift">🗑️ Xóa ca</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 3: CHẤM CÔNG -->
+<div class="modal-overlay" id="attModal">
+  <div class="modal-box">
+    <div class="modal-title" id="attTitle">Chấm công</div>
+    <div class="modal-sub" id="attSub"></div>
+    <div id="attContent"></div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="modal-back" id="btnBackFromAtt">← Quay lại</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+'use strict';
+
+const KEY='lich-ca-personal-v1';
+const NOTES_KEY='lich-ca-personal-notes-v1';
+const ATT_KEY='lich-ca-personal-attendance-v1';
+const CUSTOM_SHIFT_KEY='lich-ca-custom-shifts-v1';
+const OFFICE_KEY='lich-ca-office-mode-v1';
+
+const HOUR=3600000, WORK=12*HOUR;
+
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,'0');
+const fmt=d=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+const hm=d=>`${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const datetime=d=>`${fmt(d)} ${hm(d)}`;
+const dateKey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const atMidnight=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
+const plusDays=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
+
+let config={date:'2026-10-26',time:'07:00',restHours:24};
+try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+  if(saved&&/^\d{4}-\d{2}-\d{2}$/.test(saved.date)&&/^\d{2}:\d{2}$/.test(saved.time)){
+    config={...config,...saved,restHours:[8,12,16,24,36,48].includes(Number(saved.restHours))?Number(saved.restHours):24};
+  }
+}catch(e){}
+
+let officeMode=false;
+try{officeMode=localStorage.getItem(OFFICE_KEY)==='1'}catch(e){}
+
+let notes={};
+try{notes=JSON.parse(localStorage.getItem(NOTES_KEY))||{}}catch(e){notes={}}
+
+let att={};
+try{att=JSON.parse(localStorage.getItem(ATT_KEY))||{}}catch(e){att={}}
+
+let customShifts={};
+try{customShifts=JSON.parse(localStorage.getItem(CUSTOM_SHIFT_KEY))||{}}catch(e){customShifts={}}
+
+const SHIFT_TYPES={
+  day10:{label:'Ca 10 ngày',hours:10,in:'07:00',out:'17:00',cls:'day-shift'},
+  day11:{label:'Ca 11 ngày',hours:11,in:'07:00',out:'18:00',cls:'day-shift'},
+  day12:{label:'Ca 12 ngày',hours:12,in:'07:00',out:'19:00',cls:'day-shift'},
+  night10:{label:'Ca 10 đêm',hours:10,in:'19:00',out:'05:00 (+1)',cls:'night-shift'},
+  night11:{label:'Ca 11 đêm',hours:11,in:'19:00',out:'06:00 (+1)',cls:'night-shift'},
+  night12:{label:'Ca 12 đêm',hours:12,in:'19:00',out:'07:00 (+1)',cls:'night-shift'},
+  leave8:{label:'Nghỉ phép',hours:8,in:'—',out:'—',cls:'off-shift'},
+  office8:{label:'Hành chính',hours:8,in:'08:30',out:'16:30',cls:'office-shift'}
+};
+
+// ===== LABEL HIỂN THỊ TRÊN LỊCH (không icon) =====
+const CUSTOM_SHIFT_TYPES={
+  day:{label:'Ngày',icon:'🌞',hours:12,cls:'shift-day',tagCls:'day-shift'},
+  night:{label:'Đêm',icon:'🌙',hours:12,cls:'shift-night',tagCls:'night-shift'},
+  office:{label:'Hành chính',icon:'🏢',hours:8,cls:'shift-office',tagCls:'office-shift'},
+  off:{label:'Nghỉ',icon:'🏖️',hours:0,cls:'shift-off',tagCls:'off-shift'}
+};
+
+let viewed=new Date();
+let selected=atMidnight(new Date());
+let selectedDateForModal=null;
+
+function cycle(){return (12+Number(config.restHours||24))*HOUR}
+function start(){
+  const [y,m,d]=config.date.split('-').map(Number);
+  const [h,min]=config.time.split(':').map(Number);
+  return new Date(y,m-1,d,h,min);
+}
+
+function occurrencesForDay(day){
+  const CYCLE=cycle(),s=start().getTime();
+  const a=atMidnight(day).getTime(),b=plusDays(day,1).getTime();
+  const min=Math.max(0,Math.floor((a-s-WORK)/CYCLE)-1);
+  const max=Math.ceil((b-s)/CYCLE)+1;
+  const items=[];
+  for(let k=min;k<=max;k++){
+    const t=s+k*CYCLE;
+    if(t>=b||t+WORK<=a)continue;
+    items.push({begin:new Date(t),end:new Date(t+WORK),starts:t>=a&&t<b});
+  }
+  return items;
+}
+
+function isDay(d){const h=d.getHours();return h>=6&&h<18}
+
+// ===== LABELS: chỉ chữ, không icon =====
+function labels(day){
+  const key=dateKey(day);
+  if(customShifts[key]){
+    const cs=CUSTOM_SHIFT_TYPES[customShifts[key]];
+    // Chỉ dùng label chữ, không thêm icon
+    return [{label:cs.label,cls:cs.tagCls,type:'custom'}];
+  }
+  if(officeMode){
+    const dow=day.getDay();
+    if(dow===0)return [{label:'Nghỉ CN',cls:'off-shift',type:'office'}];
+    return [{label:'Hành chính',cls:'office-shift',type:'office'}];
+  }
+  const items=occurrencesForDay(day);
+  const starts=items.filter(x=>x.starts);
+  if(starts.length){
+    return starts.map(x=>({
+      label:isDay(x.begin)?'Ngày':'Đêm',
+      cls:isDay(x.begin)?'day-shift':'night-shift',
+      type:'cycle'
+    }));
+  }
+  if(items.length)return [{label:'Tan ca',cls:'night-shift',type:'cycle'}];
+  return [{label:'Nghỉ',cls:'off-shift',type:'cycle'}];
+}
+
+function renderCalendar(){
+  const y=viewed.getFullYear(),m=viewed.getMonth();
+  $('month').textContent=`Tháng ${m+1}/${y}`;
+  const grid=$('days');
+  grid.replaceChildren();
+  const offset=(new Date(y,m,1).getDay()+6)%7;
+  for(let i=0;i<offset;i++){
+    const blank=document.createElement('div');
+    blank.className='day empty';
+    grid.append(blank);
+  }
+  const count=new Date(y,m+1,0).getDate();
+  const todayKey=dateKey(new Date());
+  
+  for(let n=1;n<=count;n++){
+    const d=new Date(y,m,n);
+    const btn=document.createElement('button');
+    btn.type='button';
+    const key=dateKey(d);
+    let cls='day';
+    if(key===dateKey(selected))cls+=' selected';
+    if(key===todayKey)cls+=' today';
+    if(customShifts[key])cls+=' '+CUSTOM_SHIFT_TYPES[customShifts[key]].cls;
+    btn.className=cls;
+    btn.setAttribute('aria-label',fmt(d));
+    
+    const number=document.createElement('div');
+    number.className='num';
+    number.textContent=n;
+    btn.append(number);
+    
+    if(notes[key]){
+      const mark=document.createElement('div');
+      mark.textContent='📝';
+      mark.style.fontSize='10px';
+      mark.setAttribute('aria-label','Có ghi chú');
+      btn.append(mark);
+    }
+    
+    const tags=document.createElement('div');
+    tags.className='tags';
+    for(const t of labels(d)){
+      const el=document.createElement('span');
+      el.className='tag '+t.cls;
+      el.textContent=t.label;
+      tags.append(el);
+    }
+    if(att[key]){
+      const el=document.createElement('span');
+      el.className='tag att-mark';
+      el.textContent='✓ '+att[key].hours+'h';
+      tags.append(el);
+    }
+    btn.append(tags);
+    
+    btn.addEventListener('click',()=>{
+      selected=d;
+      renderDetail();
+      openActionModal(d);
+    });
+    
+    grid.append(btn);
+  }
+}
+
+function openActionModal(date){
+  selectedDateForModal=date;
+  const d=date.getDate(),m=date.getMonth()+1,y=date.getFullYear();
+  $('actionTitle').textContent='Chọn hành động';
+  $('actionSub').textContent=`Ngày ${pad(d)}/${pad(m)}/${y} · ${fmt(date)}`;
+  $('actionModal').classList.add('show');
+}
+
+function closeActionModal(){
+  $('actionModal').classList.remove('show');
+}
+
+function openShiftModal(date){
+  selectedDateForModal=date;
+  const d=date.getDate(),m=date.getMonth()+1,y=date.getFullYear();
+  $('modalTitle').textContent=`Đổi ca cho ${pad(d)}/${pad(m)}/${y}`;
+  $('noteBox').classList.remove('show');
+  $('modalNoteInput').value=notes[dateKey(date)]||'';
+  $('shiftModal').classList.add('show');
+}
+
+function closeShiftModal(){
+  $('shiftModal').classList.remove('show');
+  $('noteBox').classList.remove('show');
+}
+
+function openAttModal(date){
+  selectedDateForModal=date;
+  const d=date.getDate(),m=date.getMonth()+1,y=date.getFullYear();
+  $('attTitle').textContent='⏱️ Chấm công';
+  $('attSub').textContent=`Ngày ${pad(d)}/${pad(m)}/${y} · ${fmt(date)}`;
+  
+  const content=$('attContent');
+  content.replaceChildren();
+  const key=dateKey(date);
+  const existing=att[key];
+  
+  if(existing){
+    const st=SHIFT_TYPES[existing.type];
+    const status=document.createElement('div');
+    status.className='att-status';
+    status.innerHTML=`Đã chấm: <b>${st?st.label:existing.type}</b> – ${existing.hours}h${st&&st.in!=='—'?` (${st.in} → ${st.out})`:''}`;
+    content.append(status);
+    
+    const delBtn=document.createElement('button');
+    delBtn.type='button';
+    delBtn.className='danger';
+    delBtn.style.marginTop='10px';
+    delBtn.style.width='100%';
+    delBtn.textContent='🗑️ Xóa chấm công';
+    delBtn.addEventListener('click',()=>{
+      delete att[key];
+      saveAtt();
+      $('saved').textContent='Đã xóa chấm công ngày '+fmt(date);
+      renderCalendar();
+      renderDetail();
+      renderPayroll();
+      closeAttModal();
+    });
+    content.append(delBtn);
+  }else{
+    const hint=document.createElement('p');
+    hint.className='muted';
+    hint.style.margin='0 0 8px';
+    hint.textContent='Chọn loại ca đã làm:';
+    content.append(hint);
+    
+    const grid=document.createElement('div');
+    grid.className='att-grid';
+    const order=['day10','night10','day11','night11','day12','night12','office8','leave8'];
+    for(const type of order){
+      const st=SHIFT_TYPES[type];
+      const b=document.createElement('button');
+      b.type='button';
+      if(type==='leave8'){
+        b.textContent='Nghỉ phép (8h)';
+      }else if(type==='office8'){
+        b.textContent='🏢 Hành chính (8h)';
+      }else{
+        b.textContent=`${st.hours}h ${type.startsWith('day')?'ngày':'đêm'}`;
+      }
+      b.title=`${st.label}${st.in!=='—'?`: ${st.in} → ${st.out}`:''}`;
+      b.addEventListener('click',()=>{
+        att[key]={type,hours:st.hours,markedAt:Date.now()};
+        saveAtt();
+        $('saved').textContent='Đã chấm '+st.label+' ('+st.hours+'h) cho '+fmt(date);
+        renderCalendar();
+        renderDetail();
+        renderPayroll();
+        closeAttModal();
+      });
+      grid.append(b);
+    }
+    content.append(grid);
+  }
+  
+  $('attModal').classList.add('show');
+}
+
+function closeAttModal(){
+  $('attModal').classList.remove('show');
+}
+
+function setCustomShift(date,shift){
+  const key=dateKey(date);
+  if(shift===null){
+    delete customShifts[key];
+  }else{
+    customShifts[key]=shift;
+  }
+  try{localStorage.setItem(CUSTOM_SHIFT_KEY,JSON.stringify(customShifts))}catch(e){}
+}
+
+function renderDetail(){
+  const items=occurrencesForDay(selected);
+  const box=$('detail');
+  box.replaceChildren();
+  
+  const h=document.createElement('h3');
+  h.textContent='📅 '+fmt(selected);
+  box.append(h);
+  
+  const add=t=>{const p=document.createElement('p');p.textContent=t;box.append(p)};
+  
+  const key=dateKey(selected);
+  
+  if(customShifts[key]){
+    const cs=CUSTOM_SHIFT_TYPES[customShifts[key]];
+    add(`${cs.icon} Đã đặt: ${cs.label}${cs.hours?` (${cs.hours}h)`:''}`);
+  }
+  
+  if(notes[key]){
+    const noteDiv=document.createElement('div');
+    noteDiv.style.cssText='margin-top:10px;padding:10px 12px;border-radius:12px;background:#fffbeb;border:1px solid #f7e2a8;font-size:14px;color:#6b5300';
+    noteDiv.innerHTML=`<b>📝 Ghi chú:</b> ${notes[key].replace(/</g,'&lt;')}`;
+    box.append(noteDiv);
+  }
+  
+  if(att[key]){
+    const st=SHIFT_TYPES[att[key].type];
+    const attDiv=document.createElement('div');
+    attDiv.style.cssText='margin-top:10px;padding:10px 12px;border-radius:12px;background:#f0f6ff;border:1px solid #c6dcfa;font-size:14px;color:#1d3a63';
+    attDiv.innerHTML=`<b>⏱️ Đã chấm:</b> ${st?st.label:att[key].type} – ${att[key].hours}h`;
+    box.append(attDiv);
+  }
+  
+  const hint=document.createElement('p');
+  hint.className='muted';
+  hint.style.marginTop='10px';
+  hint.textContent='💡 Bấm vào ngày trên lịch để chấm công hoặc đổi ca.';
+  box.append(hint);
+}
+
+function saveAtt(){
+  try{localStorage.setItem(ATT_KEY,JSON.stringify(att))}
+  catch(e){$('saved').textContent='Không lưu được chấm công.'}
+}
+
+function saveNotes(){
+  try{localStorage.setItem(NOTES_KEY,JSON.stringify(notes))}
+  catch(e){$('saved').textContent='Không lưu được ghi chú.'}
+}
+
+let payBase=new Date();
+function payRange(base){
+  const y=base.getFullYear(),m=base.getMonth();
+  const end=new Date(y,m,25);
+  const start=new Date(y,m-1,26);
+  return {start,end};
+}
+
+function renderPayroll(){
+  const {start:ps,end:pe}=payRange(payBase);
+  $('payTitle').textContent=`Kỳ ${pad(ps.getDate())}/${pad(ps.getMonth()+1)} → ${pad(pe.getDate())}/${pad(pe.getMonth()+1)}/${pe.getFullYear()}`;
+  let total=0;
+  const rows=[];
+  for(const [k,v] of Object.entries(att)){
+    const [yy,mm,dd]=k.split('-').map(Number);
+    const d=new Date(yy,mm-1,dd);
+    if(d>=ps&&d<=pe){
+      total+=v.hours;
+      rows.push({d,type:v.type,hours:v.hours});
+    }
+  }
+  rows.sort((a,b)=>a.d-b.d);
+  $('payHours').textContent=(Math.round(total*100)/100).toString();
+  $('payCong').textContent=(Math.round(total/8*10000)/10000).toString();
+  const list=$('payList');
+  list.replaceChildren();
+  if(!rows.length){
+    const p=document.createElement('div');
+    p.style.color='#728198';
+    p.textContent='Chưa có ngày nào được chấm công trong kỳ này.';
+    list.append(p);
+    return;
+  }
+  for(const r of rows){
+    const st=SHIFT_TYPES[r.type];
+    const div=document.createElement('div');
+    div.innerHTML=`<span>${fmt(r.d)} – ${st?st.label:r.type}</span><span class="hrs">${r.hours}h</span>`;
+    list.append(div);
+  }
+}
+
+function nextInfo(now){
+  if(officeMode){
+    const d=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    const dow=d.getDay();
+    if(dow===0){
+      const nextMon=plusDays(d,1);
+      nextMon.setHours(8,30,0,0);
+      return {active:false,next:nextMon.getTime()};
+    }
+    d.setHours(8,30,0,0);
+    const startMs=d.getTime();
+    const endMs=startMs+8*HOUR;
+    const t=now.getTime();
+    if(t<startMs)return {active:false,next:startMs};
+    if(t<endMs)return {active:true,end:endMs,next:startMs+24*HOUR};
+    let nextDay=plusDays(d,1);
+    if(nextDay.getDay()===0)nextDay=plusDays(nextDay,1);
+    nextDay.setHours(8,30,0,0);
+    return {active:false,next:nextDay.getTime()};
+  }
+  const CYCLE=cycle(),s=start().getTime(),t=now.getTime();
+  const k=Math.floor((t-s)/CYCLE),begin=s+Math.max(0,k)*CYCLE;
+  if(t<s)return {active:false,next:s};
+  if(t<begin+WORK)return {active:true,end:begin+WORK,next:begin+CYCLE};
+  return {active:false,next:begin+CYCLE};
+}
+
+let lastToday=dateKey(new Date());
+function renderClock(){
+  const now=new Date(),x=nextInfo(now);
+  const target=x.active?x.end:x.next;
+  const diff=Math.max(0,target-now.getTime());
+  const hours=Math.floor(diff/HOUR);
+  const minutes=Math.floor(diff%HOUR/60000);
+  $('status').textContent=x.active?'🔵 Đang trong ca làm':'🟢 Đang nghỉ';
+  $('countdown').textContent=`${x.active?'Còn đến khi tan ca':'Ca tiếp theo'}: ${datetime(new Date(target))} · ${hours} giờ ${minutes} phút`;
+  if(dateKey(now)!==lastToday){
+    lastToday=dateKey(now);
+    renderCalendar();
+  }
+}
+
+$('startDate').value=config.date;
+$('startTime').value=config.time;
+$('restHours').value=String(config.restHours);
+$('officeToggle').checked=officeMode;
+
+$('officeToggle').addEventListener('change',e=>{
+  officeMode=e.target.checked;
+  try{localStorage.setItem(OFFICE_KEY,officeMode?'1':'0')}catch(e){}
+  $('saved').textContent=officeMode?'✓ Đã bật chế độ hành chính':'Đã tắt chế độ hành chính';
+  renderCalendar();
+  renderDetail();
+  renderClock();
+});
+
+$('settings').addEventListener('submit',e=>{
+  e.preventDefault();
+  const date=$('startDate').value;
+  const time=$('startTime').value;
+  if(!date||!time)return;
+  config={date,time,restHours:Number($('restHours').value)};
+  try{
+    localStorage.setItem(KEY,JSON.stringify(config));
+    $('saved').textContent='✓ Đã lưu cài đặt.';
+  }catch(e){
+    $('saved').textContent='Không lưu được; lịch vẫn cập nhật trong phiên này.';
+  }
+  viewed=new Date(selected.getFullYear(),selected.getMonth(),1);
+  renderCalendar();
+  renderDetail();
+  renderClock();
+});
+
+$('prev').addEventListener('click',()=>{
+  viewed=new Date(viewed.getFullYear(),viewed.getMonth()-1,1);
+  renderCalendar();
+});
+$('next').addEventListener('click',()=>{
+  viewed=new Date(viewed.getFullYear(),viewed.getMonth()+1,1);
+  renderCalendar();
+});
+$('today').addEventListener('click',()=>{
+  selected=atMidnight(new Date());
+  viewed=new Date(selected.getFullYear(),selected.getMonth(),1);
+  renderCalendar();
+  renderDetail();
+});
+
+$('payPrev').addEventListener('click',()=>{
+  payBase=new Date(payBase.getFullYear(),payBase.getMonth()-1,1);
+  renderPayroll();
+});
+$('payNext').addEventListener('click',()=>{
+  payBase=new Date(payBase.getFullYear(),payBase.getMonth()+1,1);
+  renderPayroll();
+});
+
+$('btnGoAttendance').addEventListener('click',()=>{
+  if(selectedDateForModal){
+    const date=selectedDateForModal;
+    closeActionModal();
+    openAttModal(date);
+  }
+});
+
+$('btnGoShift').addEventListener('click',()=>{
+  if(selectedDateForModal){
+    const date=selectedDateForModal;
+    closeActionModal();
+    openShiftModal(date);
+  }
+});
+
+$('btnCancelAction').addEventListener('click',closeActionModal);
+
+document.querySelectorAll('.shift-option[data-shift]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const shift=btn.dataset.shift;
+    if(selectedDateForModal){
+      setCustomShift(selectedDateForModal,shift);
+      const cs=CUSTOM_SHIFT_TYPES[shift];
+      $('saved').textContent=`Đã đặt ${cs.label} cho ${fmt(selectedDateForModal)}`;
+      renderCalendar();
+      renderDetail();
+      closeShiftModal();
+    }
+  });
+});
+
+$('btnOpenNote').addEventListener('click',()=>{
+  $('noteBox').classList.toggle('show');
+  if($('noteBox').classList.contains('show')){
+    $('modalNoteInput').focus();
+  }
+});
+
+$('btnSaveNote').addEventListener('click',()=>{
+  if(!selectedDateForModal)return;
+  const key=dateKey(selectedDateForModal);
+  const value=$('modalNoteInput').value.trim();
+  if(value)notes[key]=value;
+  else delete notes[key];
+  saveNotes();
+  $('saved').textContent=value?`✓ Đã lưu ghi chú cho ${fmt(selectedDateForModal)}.`:`Đã xóa ghi chú cho ${fmt(selectedDateForModal)}.`;
+  renderCalendar();
+  renderDetail();
+  closeShiftModal();
+});
+
+$('btnDeleteNote').addEventListener('click',()=>{
+  if(!selectedDateForModal)return;
+  const key=dateKey(selectedDateForModal);
+  delete notes[key];
+  saveNotes();
+  $('modalNoteInput').value='';
+  $('saved').textContent=`Đã xóa ghi chú cho ${fmt(selectedDateForModal)}.`;
+  renderCalendar();
+  renderDetail();
+  closeShiftModal();
+});
+
+$('btnBackToAction').addEventListener('click',()=>{
+  if(selectedDateForModal){
+    const date=selectedDateForModal;
+    closeShiftModal();
+    openActionModal(date);
+  }
+});
+
+$('btnClearShift').addEventListener('click',()=>{
+  if(selectedDateForModal){
+    setCustomShift(selectedDateForModal,null);
+    $('saved').textContent='Đã xóa ca cho '+fmt(selectedDateForModal);
+    renderCalendar();
+    renderDetail();
+    closeShiftModal();
+  }
+});
+
+$('btnBackFromAtt').addEventListener('click',()=>{
+  if(selectedDateForModal){
+    const date=selectedDateForModal;
+    closeAttModal();
+    openActionModal(date);
+  }
+});
+
+$('actionModal').addEventListener('click',e=>{
+  if(e.target.id==='actionModal')closeActionModal();
+});
+$('shiftModal').addEventListener('click',e=>{
+  if(e.target.id==='shiftModal')closeShiftModal();
+});
+$('attModal').addEventListener('click',e=>{
+  if(e.target.id==='attModal')closeAttModal();
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    closeActionModal();
+    closeShiftModal();
+    closeAttModal();
+  }
+});
+
+renderCalendar();
+renderDetail();
+renderClock();
+renderPayroll();
+setInterval(renderClock,30000);
+
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+})();
+</script>
+</body>
+</html>
